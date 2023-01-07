@@ -3,13 +3,7 @@ const app = express();
 const path = require("path");
 
 //importing required models to run the elections
-const {
-	admin,
-	StateElections,
-	question,
-	options,
-	voters,
-} = require("./models");
+const { admin, StateElections, question, options,	voters,} = require("./models");
 
 const bcrypt = require("bcrypt");
 var cookieParser = require("cookie-parser");
@@ -201,7 +195,7 @@ app.post("/users", async (request, response) => {
 	const hashpwd = await bcrypt.hash(request.body.password, saltRounds); 
 
 	try {
-		const user = await admin.CreateAdmin({
+		const user = await admin.create({
 			name: request.body.name,
 			Email: request.body.Email,
 			password: hashpwd,
@@ -286,7 +280,7 @@ app.get(
 
 		response.render("electionhomepage", {
 			election: elections,
-			adminname: Admin.name,
+			username: Admin.name,
 			questions: questions,
 			voters: Voters,
 			csrf: request.csrfToken(),
@@ -1114,7 +1108,7 @@ app.post(
 
 //deleting the voter
 app.post(
-	"/election/:ElectionId/voter/:voterID/remove",
+	"/election/:ElectionId/voter/:voterID/delete",
 	connectEnsureLogin.ensureLoggedIn(),
 	async (request, response) => {
 		const adminID = request.user.id;
