@@ -203,7 +203,7 @@ app.delete(
 
     if (adminID !== election.AdminId) {
       console.log("You are not authorized to perform this operation");
-      return response.redirect("/home");
+      return response.redirect("/index");
     }
 
     // get all questions of that election
@@ -263,7 +263,7 @@ app.post(
 
     try {
       await StateElections.add(loggedInAdminID, request.body.name);
-      response.redirect("/home");
+      response.redirect("/index");
     } catch (error) {
       console.log(error);
       response.send(error);
@@ -279,7 +279,7 @@ app.get(
     const loggedInAdminID = request.user.id;
     const Admin = await admin.findByPk(loggedInAdminID);
 
-    response.render("newElection", {
+    response.render("create_election", {
       username: Admin.name,
       csrf: request.csrfToken(),
     });
@@ -402,7 +402,7 @@ app.post("/users", async (request, response) => {
         response.redirect("/");
       } else {
         request.flash("success", "Sign up successful");
-        response.redirect("/home");
+        response.redirect("/index");
       }
     });
   } catch (error) {
@@ -475,6 +475,39 @@ app.post(
   }
 );
 
+// edit question frontend
+app.get(
+  "/election/:ElectionId/question/:QuestionId/edit",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    const adminID = request.user.id;
+    const Admin = await admin.findByPk(adminID);
+    const election = await StateElections.findByPk(request.params.ElectionId);
+
+    if (election.AdminId !== adminID) {
+      console.log("You don't have access to edit this election");
+      return response.render("error", {
+        errorMessage: "You are not authorized to view this page",
+      });
+    }
+
+    if (election.launched) {
+      console.log("Election already launched");
+      return response.render("error", {
+        errorMessage: "Invalid request, election is already live",
+      });
+    }
+
+    const Question = await question.findByPk(request.params.QuestionId);
+    response.render("Edit_Question", {
+      username: Admin.name,
+      election: election,
+      question: Question,
+      csrf: request.csrfToken(),
+    });
+  }
+);
+
 // delete option for question
 app.delete(
   "/election/:ElectionId/question/:QuestionId/option/:id",
@@ -537,7 +570,7 @@ app.delete(
 );
 //stoped here( we do tmrw :((  )))
 //hehehe
-// questions home page with all options
+// questions index page with all options
 app.get(
   "/election/:id/question/:QuestionId",
   connectEnsureLogin.ensureLoggedIn(),
@@ -635,6 +668,106 @@ app.post(
     }
   }
 );
+
+
+//editing option 
+app.get(
+  "/election/:ElectionId/question/:QuestionId/option/:optionID/edit",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    const adminID = request.user.id;
+    const Admin = await admin.findByPk(adminID);
+    const election = await StateElections.findByPk(request.params.ElectionId);
+
+    if (election.AdminId !== adminID) {
+      return response.render("error", {
+        errorMessage: "You are not authorized to view this page",
+      });
+    }
+
+    if (election.launched) {
+      console.log("Election already launched");
+      return response.render("error", {
+        errorMessage: "Invalid request, election is already launched",
+      });
+    }
+
+    const Question = await question.findByPk(request.params.QuestionId);
+    const option = await options.findByPk(request.params.optionID);
+    response.render("Edit_Option", {
+      username: Admin.name,
+      election: election,
+      question: Question,
+      option: option,
+      csrf: request.csrfToken(),
+    });
+  }
+);
+
+//udapting the option
+app.post(
+  "/election/:ElectionId/question/:QuestionId/option/:optionID/update",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    const adminID = request.user.id;
+    const election = await StateElections.findByPk(request.params.ElectionId);
+
+    if (election.AdminId !== adminID) {
+      console.log("You don't have access to edit this election");
+      return response.render("error", {
+        errorMessage: "You are not authorized to view this page",
+      });
+    }
+
+    if (election.launched) {
+      console.log("Election already launched");
+      return response.render("error", {
+        errorMessage: "Invalid request, election is already launched",
+      });
+    }
+
+    // validation checks
+    if (request.body.choice.trim().length === 0) {
+      request.flash("error", "Option can't be empty");
+      return response.redirect(
+        `/election/${request.params.ElectionId}/question/${request.params.QuestionId}/option/${request.params.optionID}/edit`
+      );
+    }
+
+    const sameOption = await options.findOne({
+      where: {
+        QuestionId: request.params.QuestionId,
+        choice: request.body.choice,
+      },
+    });
+
+    if (sameOption) {
+      if (sameOption.id.toString() !== request.params.optionID) {
+        request.flash("error", "Option already exists");
+        return response.redirect(
+          `/election/${request.params.ElectionId}/question/${request.params.QuestionId}/option/${request.params.optionID}/edit`
+        );
+      } else {
+        request.flash("error", "No changes made");
+        return response.redirect(
+          `/election/${request.params.ElectionId}/question/${request.params.QuestionId}/option/${request.params.optionID}/edit`
+        );
+      }
+    }
+
+    try {
+      await options.edit(request.body.choice, request.params.optionID);
+      response.redirect(
+        `/election/${request.params.ElectionId}/question/${request.params.QuestionId}`
+      );
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  }
+);
+
+
 
 // launch election
 app.get(
@@ -831,38 +964,7 @@ app.post(
   }
 );
 
-// edit question frontend
-app.get(
-  "/election/:ElectionId/question/:QuestionId/edit",
-  connectEnsureLogin.ensureLoggedIn(),
-  async (request, response) => {
-    const adminID = request.user.id;
-    const Admin = await admin.findByPk(adminID);
-    const election = await StateElections.findByPk(request.params.ElectionId);
 
-    if (election.AdminId !== adminID) {
-      console.log("You don't have access to edit this election");
-      return response.render("error", {
-        errorMessage: "You are not authorized to view this page",
-      });
-    }
-
-    if (election.launched) {
-      console.log("Election already launched");
-      return response.render("error", {
-        errorMessage: "Invalid request, election is already live",
-      });
-    }
-
-    const Question = await question.findByPk(request.params.QuestionId);
-    response.render("editQuestion", {
-      username: Admin.name,
-      election: election,
-      question: Question,
-      csrf: request.csrfToken(),
-    });
-  }
-);
 
 // add voter
 app.post(
@@ -961,102 +1063,6 @@ app.post(
   }
 );
 
-// edit option frontend
-app.get(
-  "/election/:ElectionId/question/:QuestionId/option/:optionID/edit",
-  connectEnsureLogin.ensureLoggedIn(),
-  async (request, response) => {
-    const adminID = request.user.id;
-    const Admin = await admin.findByPk(adminID);
-    const election = await StateElections.findByPk(request.params.ElectionId);
-
-    if (election.AdminId !== adminID) {
-      return response.render("error", {
-        errorMessage: "You are not authorized to view this page",
-      });
-    }
-
-    if (election.launched) {
-      console.log("Election already launched");
-      return response.render("error", {
-        errorMessage: "Invalid request, election is already launched",
-      });
-    }
-
-    const Question = await question.findByPk(request.params.QuestionId);
-    const option = await options.findByPk(request.params.optionID);
-    response.render("editOption", {
-      username: Admin.name,
-      election: election,
-      question: Question,
-      option: option,
-      csrf: request.csrfToken(),
-    });
-  }
-);
-
-// edit option
-app.post(
-  "/election/:ElectionId/question/:QuestionId/option/:optionID/update",
-  connectEnsureLogin.ensureLoggedIn(),
-  async (request, response) => {
-    const adminID = request.user.id;
-    const election = await StateElections.findByPk(request.params.ElectionId);
-
-    if (election.AdminId !== adminID) {
-      console.log("You don't have access to edit this election");
-      return response.render("error", {
-        errorMessage: "You are not authorized to view this page",
-      });
-    }
-
-    if (election.launched) {
-      console.log("Election already launched");
-      return response.render("error", {
-        errorMessage: "Invalid request, election is already launched",
-      });
-    }
-
-    // validation checks
-    if (request.body.choice.trim().length === 0) {
-      request.flash("error", "Option can't be empty");
-      return response.redirect(
-        `/election/${request.params.ElectionId}/question/${request.params.QuestionId}/option/${request.params.optionID}/edit`
-      );
-    }
-
-    const sameOption = await options.findOne({
-      where: {
-        QuestionId: request.params.QuestionId,
-        choice: request.body.choice,
-      },
-    });
-
-    if (sameOption) {
-      if (sameOption.id.toString() !== request.params.optionID) {
-        request.flash("error", "Option already exists");
-        return response.redirect(
-          `/election/${request.params.ElectionId}/question/${request.params.QuestionId}/option/${request.params.optionID}/edit`
-        );
-      } else {
-        request.flash("error", "No changes made");
-        return response.redirect(
-          `/election/${request.params.ElectionId}/question/${request.params.QuestionId}/option/${request.params.optionID}/edit`
-        );
-      }
-    }
-
-    try {
-      await options.edit(request.body.choice, request.params.optionID);
-      response.redirect(
-        `/election/${request.params.ElectionId}/question/${request.params.QuestionId}`
-      );
-    } catch (error) {
-      console.log(error);
-      return;
-    }
-  }
-);
 
 // cast vote frontend
 app.get("/election/:id/vote", async (request, response) => {
