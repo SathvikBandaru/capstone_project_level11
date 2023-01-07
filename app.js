@@ -109,27 +109,27 @@ passport.deserializeUser((obj, done) => {
   done(null, obj);
 });
 
-// home page
+//index page
 app.get("/", (request, response) => {
-  response.render("home");
+  response.render("index");
 });
 
-// signup page frontend
+//signup page
 app.get("/signup", (request, response) => {
   response.render("signup", { csrf: request.csrfToken() });
 });
 
-// login page frontend
+//login page
 app.get("/login", (request, response) => {
   if (request.user && request.user.id) {
-    return response.redirect("/home");
+    return response.redirect("/index");
   }
   response.render("login", { csrf: request.csrfToken() });
 });
 
-// admin home page frontend
+//index home page
 app.get(
-  "/home",
+  "/index",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
     const loggedInAdminID = request.user.id;
@@ -139,7 +139,7 @@ app.get(
       where: { AdminId: request.user.id },
     });
 
-    response.render("adminHome", {
+    response.render("homepage", {
       username: Admin.name,
       elections: elections,
       csrf: request.csrfToken(),
@@ -301,7 +301,7 @@ app.get(
       });
     }
 
-    response.render("editElection", {
+    response.render("Edit_Election", {
       election: election,
       username: Admin.name,
       csrf: request.csrfToken(),
@@ -573,11 +573,6 @@ app.get(
   "/election/:ElectionId/question/:QuestionId/options",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
-    // const adminID = request.user.id;
-    // const election = await Election.findByPk(request.params.ElectionId);
-
-    // const questions = await question.findByPk(request.params.questionID);
-
     const Options = await options.findAll({
       where: { QuestionId: request.params.QuestionId },
     });
