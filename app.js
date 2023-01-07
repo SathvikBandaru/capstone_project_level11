@@ -568,8 +568,7 @@ app.delete(
     }
   }
 );
-//stoped here( we do tmrw :((  )))
-//hehehe
+
 // questions index page with all options
 app.get(
   "/election/:id/question/:QuestionId",
@@ -591,7 +590,7 @@ app.get(
       where: { QuestionId: request.params.QuestionId },
     });
 
-    response.render("questionHome", {
+    response.render("questionshomepage", {
       username: Admin.name,
       question: Question,
       election: election,
@@ -889,7 +888,7 @@ app.get(
       Options.push(allOption);
     }
 
-    response.render("preview", {
+    response.render("previewhomepage", {
       election: election,
       questions: questions,
       options: Options,
@@ -1099,7 +1098,7 @@ app.get("/election/:id/vote", async (request, response) => {
   if (request.user && request.user.id && request.user.VoterId) {
     const voter = await voters.findByPk(request.user.id);
 
-    response.render("vote", {
+    response.render("voterdetails", {
       election: election,
       questions: questions,
       options: Options,
