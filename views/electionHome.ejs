@@ -58,7 +58,7 @@
   </head>
   <body class="bg-gradient-to-tl from-gray-200 to-green-500 min-h-screen w-full">
     <div class="flex justify-center text-blue-800">
-      <%- include ('updatedHeader', {username: username}) %>
+      <%- include ('header', {username: username}) %>
     </div>
     <div class="flex flex-col justify-center items-center p-4">
       <div class="flex flex-col justify-center md:w-2/5 w-full">
@@ -204,7 +204,7 @@
 
         <!-- List of Questions -->
         <p class="font-semibold pt-4 text-xl">Questions</p>
-        <%- include ('questionList.ejs', {questions: questions, election:
+        <%- include ('viewquestion.ejs', {questions: questions, election:
         election}) %>
 
         <!-- Voter Section -->
