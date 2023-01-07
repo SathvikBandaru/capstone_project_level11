@@ -1,0 +1,75 @@
+<html>
+  <head>
+    <title>Sign Up</title>
+    <meta name="csrf-token" content="<%= csrf %>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+  </head>
+  <body class="text-white">
+    <img src="bg2.jpg" style="opacity: 0.9;position: absolute;top: 0px; height: 100%;width: 100%;z-index: -1;" alt="">
+    <div class="mt-5">
+      <header>
+        <h1  class="text-white bg-dark p-4 w-50 rounded-5 border-5 border mx-auto text-center">WD Voting Platform</h1>
+      </header>
+    </div>
+    <div class="text-center">
+      <div >
+        <h1 class="mt-2 h2">Sign Up</h1> <br>
+        <form action="/users" method="post" >
+          <input type="hidden" name="_csrf" value="<%= csrf %>">
+          <div >
+            <label for="name" class="h2">Name</label>
+            
+            <input
+              type="text"
+              name="name"
+              class="form-control w-25 mx-auto"
+            />
+          </div>
+          <div > <br>
+            <label for="Email" class="h2">Email</label>
+            <input
+              type="text"
+              name="Email"
+              class="form-control w-25 mx-auto"
+            />
+          </div>
+          <div > <br>
+            <label for="password" class="h2">Password</label>
+            <input
+              type="password"
+              name="password"
+              class="form-control w-25 mx-auto"
+            />
+          </div>
+          <button
+            type="submit"
+            class="btn btn-dark mt-3 border-1 border"
+          >
+            Sign Up
+          </button>
+        </form>
+
+        <!-- flash message -->
+        <div >
+          <% if (messages && messages.error && messages.error.length > 0) { %>
+            <% for(var i=0; i<messages.error.length; i++) {%>
+              <div > <%= messages.error[i] %></div>
+            <% } %>
+          <% } %>
+        </div>
+
+        <div >
+          <p class="text-white" style="font-weight: 500;">Already have an account?</p>
+          <a
+            
+            href="/login"
+            class="btn btn-dark border-1 border"
+            >Log In</a
+          >
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+  </body>
+</html>
