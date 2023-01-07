@@ -376,7 +376,7 @@ app.post(
 );
 
 
-// delete election
+//deleting the election and all election details
 app.delete(
   "/election/:id",
   connectEnsureLogin.ensureLoggedIn(),
@@ -424,7 +424,7 @@ app.delete(
 );
 
 
-// get questions of election
+//questions 
 app.get(
   "/election/:id/questions",
   connectEnsureLogin.ensureLoggedIn(),
@@ -437,7 +437,7 @@ app.get(
   }
 );
 
-// add question to election
+//adding the question to particular election
 app.post(
   "/election/:id/questions/add",
   connectEnsureLogin.ensureLoggedIn(),
@@ -488,7 +488,7 @@ app.post(
   }
 );
 
-// edit question frontend
+//editing question name and description for a particular election
 app.get(
   "/election/:ElectionId/question/:QuestionId/edit",
   connectEnsureLogin.ensureLoggedIn(),
@@ -521,38 +521,74 @@ app.get(
   }
 );
 
-// delete option for question
-app.delete(
-  "/election/:ElectionId/question/:QuestionId/option/:id",
+//updating question details
+app.post(
+  "/election/:ElectionId/question/:QuestionId/update",
   connectEnsureLogin.ensureLoggedIn(),
   async (request, response) => {
+    console.log("found");
     const adminID = request.user.id;
     const election = await StateElections.findByPk(request.params.ElectionId);
 
     if (election.AdminId !== adminID) {
+      console.log("You don't have access to edit this election");
       return response.render("error", {
         errorMessage: "You are not authorized to view this page",
       });
     }
 
-    const Question = await question.findByPk(request.params.QuestionId);
+    if (election.launched) {
+      console.log("Election already launched");
+      return response.render("error", {
+        errorMessage: "Invalid request, election is already launched",
+      });
+    }
 
-    if (!Question) {
-      console.log("Question not found");
-      return response.render("error", { errorMessage: "Question not found" });
+    // validation checks
+    if (request.body.title.trim().length === 0) {
+      request.flash("error", "Question name cannot be empty");
+      return response.redirect(
+        `/election/${request.params.ElectionId}/question/${request.params.QuestionId}/edit`
+      );
+    }
+    const sameQuestion = await question.findOne({
+      where: {
+        title: request.body.title,
+        description: request.body.description,
+        ElectionId: request.params.ElectionId,
+      },
+    });
+    if (sameQuestion) {
+      if (sameQuestion.id.toString() === request.params.QuestionID) {
+        request.flash("error", "Question name is same as before");
+        return response.redirect(
+          `/election/${request.params.ElectionId}/question/${request.params.QuestionId}/edit`
+        );
+      } else {
+        request.flash("error", "Question name already used");
+        return response.redirect(
+          `/election/${request.params.ElectionId}/question/${request.params.QuestionId}/edit`
+        );
+      }
     }
 
     try {
-      await options.destroy({ where: { id: request.params.id } });
-      return response.json({ ok: true });
+      await question.edit(
+        request.body.title,
+        request.body.description,
+        request.params.QuestionId
+      );
+      response.redirect(
+        `/election/${request.params.ElectionId}/question/${request.params.QuestionId}`
+      );
     } catch (error) {
       console.log(error);
-      return response.send(error);
+      return;
     }
   }
 );
 
-// delete question
+//deleting question for a particular election
 app.delete(
   "/election/:id/question/:QuestionId",
   connectEnsureLogin.ensureLoggedIn(),
@@ -582,7 +618,7 @@ app.delete(
   }
 );
 
-// questions index page with all options
+//questions home page
 app.get(
   "/election/:id/question/:QuestionId",
   connectEnsureLogin.ensureLoggedIn(),
@@ -613,7 +649,7 @@ app.get(
   }
 );
 
-// get options
+//options 
 app.get(
   "/election/:ElectionId/question/:QuestionId/options",
   connectEnsureLogin.ensureLoggedIn(),
@@ -625,7 +661,9 @@ app.get(
   }
 );
 
-// add option to questions
+
+
+//adding options to particular question
 app.post(
   "/election/:ElectionId/question/:QuestionId/options/add",
   connectEnsureLogin.ensureLoggedIn(),
@@ -681,7 +719,7 @@ app.post(
   }
 );
 
-//editing option
+//editing options for a particular question
 app.get(
   "/election/:ElectionId/question/:QuestionId/option/:optionID/edit",
   connectEnsureLogin.ensureLoggedIn(),
@@ -715,7 +753,7 @@ app.get(
   }
 );
 
-//udapting the option
+//posting the updated details to options table
 app.post(
   "/election/:ElectionId/question/:QuestionId/option/:optionID/update",
   connectEnsureLogin.ensureLoggedIn(),
@@ -778,7 +816,39 @@ app.post(
   }
 );
 
-// launch election
+
+//deleting a option for a particular question
+app.delete(
+  "/election/:ElectionId/question/:QuestionId/option/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    const adminID = request.user.id;
+    const election = await StateElections.findByPk(request.params.ElectionId);
+
+    if (election.AdminId !== adminID) {
+      return response.render("error", {
+        errorMessage: "You are not authorized to view this page",
+      });
+    }
+
+    const Question = await question.findByPk(request.params.QuestionId);
+
+    if (!Question) {
+      console.log("Question not found");
+      return response.render("error", { errorMessage: "Question not found" });
+    }
+
+    try {
+      await options.destroy({ where: { id: request.params.id } });
+      return response.json({ ok: true });
+    } catch (error) {
+      console.log(error);
+      return response.send(error);
+    }
+  }
+);
+
+//launching election 
 app.get(
   "/election/:id/launch",
   connectEnsureLogin.ensureLoggedIn(),
@@ -837,7 +907,7 @@ app.get(
   }
 );
 
-// end election
+//ending election
 app.put(
   "/election/:id/end",
   connectEnsureLogin.ensureLoggedIn(),
@@ -906,72 +976,7 @@ app.get(
   }
 );
 
-// edit question
-app.post(
-  "/election/:ElectionId/question/:QuestionId/update",
-  connectEnsureLogin.ensureLoggedIn(),
-  async (request, response) => {
-    console.log("found");
-    const adminID = request.user.id;
-    const election = await StateElections.findByPk(request.params.ElectionId);
 
-    if (election.AdminId !== adminID) {
-      console.log("You don't have access to edit this election");
-      return response.render("error", {
-        errorMessage: "You are not authorized to view this page",
-      });
-    }
-
-    if (election.launched) {
-      console.log("Election already launched");
-      return response.render("error", {
-        errorMessage: "Invalid request, election is already launched",
-      });
-    }
-
-    // validation checks
-    if (request.body.title.trim().length === 0) {
-      request.flash("error", "Question name cannot be empty");
-      return response.redirect(
-        `/election/${request.params.ElectionId}/question/${request.params.QuestionId}/edit`
-      );
-    }
-    const sameQuestion = await question.findOne({
-      where: {
-        title: request.body.title,
-        description: request.body.description,
-        ElectionId: request.params.ElectionId,
-      },
-    });
-    if (sameQuestion) {
-      if (sameQuestion.id.toString() === request.params.QuestionID) {
-        request.flash("error", "Question name is same as before");
-        return response.redirect(
-          `/election/${request.params.ElectionId}/question/${request.params.QuestionId}/edit`
-        );
-      } else {
-        request.flash("error", "Question name already used");
-        return response.redirect(
-          `/election/${request.params.ElectionId}/question/${request.params.QuestionId}/edit`
-        );
-      }
-    }
-
-    try {
-      await question.edit(
-        request.body.title,
-        request.body.description,
-        request.params.QuestionId
-      );
-      response.redirect(
-        `/election/${request.params.ElectionId}/question/${request.params.QuestionId}`
-      );
-    } catch (error) {
-      console.log(error);
-      return;
-    }
-  }
-);
 
 // add voter
 app.post(
