@@ -3,14 +3,8 @@
         <meta name="csrf-token" content="<%= csrf %>" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <script src="https://cdn.tailwindcss.com"></script>
-        <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
-        integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer"
-        />
-    </head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+   </head>
     <body>
         <div>
             <p class="text-xl">Voter ID: <b><%= voter.VoterId %></b></p>
@@ -26,13 +20,7 @@
                         <fieldset id="question-<%= questions[i].id %>">
                             <% for (var j=0; j<options[i].length; j++) { %>
                                 <div class="flex gap-2">
-                                    <input
-                                        class="border-2 flex items-center border-black p-2 rounded-lg"
-                                        id="question-<%= questions[i].id %>-<%= options[i][j].id %>"
-                                        type="radio"
-                                        value="<%= options[i][j].id %>"
-                                        name="question-<%= questions[i].id %>"
-                                    />
+                                    <input  class="border-2 flex items-center border-black p-2 rounded-lg" id="question-<%= questions[i].id %>-<%= options[i][j].id %>" type="radio"  value="<%= options[i][j].id %>" name="question-<%= questions[i].id %>"/>
                                     <label for="question-<%= questions[i].id %>-<%= options[i][j].id %>"><%= options[i][j].choice %></label>
                                 </div>
                             <% } %>

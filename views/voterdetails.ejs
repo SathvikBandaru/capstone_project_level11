@@ -12,14 +12,10 @@
          referrerpolicy="no-referrer"
       />
    </head>
-   <body
-      class="bg-gradient-to-tl from-gray-200 to-green-500 min-h-screen w-full"
-   >
+   <body class="bg-gradient-to-tl from-gray-200 to-green-500 min-h-screen w-full">
       <div class="flex justify-center text-blue-800">
          <header>
-            <h1
-               class="text-white bg-dark p-4 w-50 rounded-5 border-5 border mx-auto text-center"
-            >
+            <h1 class="text-white bg-dark p-4 w-50 rounded-5 border-5 border mx-auto text-center">
                WD Voting Platform
             </h1>
          </header>
@@ -43,13 +39,18 @@
             </div>
             <% } else { %>
             <div class="flex flex-col gap-4">
-               <% if (verified) { %> <% if (voter.status) { %>
-               <div class="flex justify-center">
-                  <p class="text-2xl text-gray-600">Thank you for voting.</p>
-               </div>
-               <% } else { %> <%- include ('votinghomepage.ejs', {election:
-               election, voter: voter}) %> <% } %> <% } else { %> <%- include
-               ('voterlogin.ejs', {election: election}) %> <% } %>
+               <% if (verified) { %>
+                   <% if (voter.status) { %>
+                     <div class="flex justify-center">
+                        <p class="text-2xl text-gray-600">Thank you for voting.</p>
+                     </div>
+                   <% } else { %> 
+                  
+                      <%- include ('votinghomepage.ejs', {election: election, voter: voter}) %> 
+                   <% } %> 
+               <% } else { %> 
+                  <%- include ('voterlogin.ejs', {election: election}) %> 
+               <% } %>
             </div>
             <% } %>
          </div>
