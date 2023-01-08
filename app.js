@@ -1159,6 +1159,93 @@ app.post(
 	}
 );
 
+//voter response for a particular election
+app.post(
+	"/election/:ElectionId/voter/:id/submit",
+	async (request, response) => {
+		const election = await StateElections.findByPk(
+			request.params.ElectionId
+		);
+
+		// validation checks
+		if (election.launched === false) {
+			console.log("Election not launched");
+			return response.render("error", {
+				errorMessage: "Election not launched yet",
+			});
+		}
+
+		if (election.ended === true) {
+			console.log("Election ended");
+			return response.render("error", {
+				errorMessage: "Election has ended",
+			});
+		}
+
+		try {
+			const questions = await question.findAll({
+				where: {
+					ElectionId: request.params.ElectionId,
+				},
+			});
+
+			let responses = [];
+
+			for (let i = 0; i < questions.length; i++) {
+				const responseID = Number(
+					request.body[`question-${questions[i].id}`]
+				);
+				responses.push(responseID);
+			}
+
+			// add responses of voter
+			await voters.addResponse(request.params.id, responses);
+
+			// mark the voter as voted
+			await voters.markVoted(request.params.id);
+
+			// render thank you message
+			return response.redirect(`/election/${election.id}/vote`);
+		} catch (error) {
+			console.log(error);
+			return response.send(error);
+		}
+	}
+);
+
+//ending election
+app.put(
+	"/election/:id/end",
+	connectEnsureLogin.ensureLoggedIn(),
+	async (request, response) => {
+		const adminID = request.user.id;
+		const election = await StateElections.findByPk(request.params.id);
+
+		// ensure that admin has access rights
+		if (election.AdminId !== adminID) {
+			console.log("You don't have access to edit this election");
+			return response.render("error", {
+				errorMessage: "You are not authorized to view this page",
+			});
+		}
+
+		if (election.ended === true || election.launched === false) {
+			console.log("Election not launched");
+			return response.render("error", {
+				errorMessage: "Invalid Request",
+			});
+		}
+
+		try {
+			await StateElections.end(request.params.id);
+			return response.json({ ok: true });
+		} catch (error) {
+			console.log(error);
+			return response.send(error);
+		}
+	}
+);
+
 
 
 module.exports = app;
