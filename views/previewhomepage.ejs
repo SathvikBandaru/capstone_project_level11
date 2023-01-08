@@ -1,19 +1,24 @@
 <html>
   <head>
-    <title><%= %>Online Voting Platform </title>
+    <title><%= %>Online Voting Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <style>
+       body{
+        background: linear-gradient(#1aff00, #00eeff);
+      }
+    </style>
   </head>
-  <body class="bg-gradient-to-tl from-gray-200 to-green-500 min-h-screen w-full">
+  <body >
+   
     <div class="flex justify-center text-blue-800">
-      <header>
-        <h1  class="text-white bg-dark p-4 w-50 rounded-5 border-5 border mx-auto text-center">WD Voting Platform</h1>
-      </header>
+     
       
     </div>
     <div class="flex flex-col justify-center items-center p-4">
       <div class="flex flex-col justify-center md:w-2/5 w-full">
-        <hr />
+   
         <div class="flex justify-center pb-8">
           <p class="text-4xl font-semibold pt-4"><%= election.name %> Preview</p>
         </div>
@@ -36,7 +41,7 @@
             <% } %>
         </div>
 
-        <a href="/election/<%= election.id %>" class="flex justify-center mt-8 p-2 rounded-lg bg-purple-500 hover:bg-purple-700 border-2 border-purple-800">Back to Home</a>
+        <a href="/election/<%= election.id %>" class="btn btn-danger">Back to Home</a>
       </div>
     </div>
   </body>

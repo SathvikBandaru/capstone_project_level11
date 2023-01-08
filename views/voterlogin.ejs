@@ -10,6 +10,12 @@
         crossorigin="anonymous"
         referrerpolicy="no-referrer"
         />
+        <style>
+            body{
+        background: linear-gradient(#7600ca, #dbd0038d);
+      }
+        </style>
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"> -->
     </head>
     <body>
         <form action="/election/<%= election.id %>/vote" method="post" class="flex flex-col gap-4 justify-center items-center">
@@ -22,7 +28,7 @@
                 <label for="Password">Password</label>
                 <input class="border-2 flex items-center border-black p-2 rounded-lg" id="Password"  type="password" placeholder="Password"  name="Password"/>
             </div>
-            <button class="flex justify-center mt-4 p-2 rounded-lg bg-purple-500 hover:bg-purple-700 border-2 border-purple-800">Submit</button>
+            <button class="btn btn-success">Submit</button>
         </form>
 
         <!-- flash message -->

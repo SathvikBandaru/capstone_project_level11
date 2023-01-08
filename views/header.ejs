@@ -1,23 +1,49 @@
-<div class="flex flex-col gap-2 w-full">
-   <div class="flex flex-col justify-center items-center text-blue-800">
-      <header>
-         <h1 class="text-white bg-dark p-4 w-50 rounded-5 border-5 border mx-auto text-center">
+<style>
+   .fff{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin-top: 1rem;
+      text-align: center;
+      margin: auto;
+   }
+   .f2{
+      display: flex;
+      width: 95%;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+   }
+   .f3{
+      display: flex;
+   }
+   .btn-primary:hover{
+      background-color: black;
+   }
+   .btn-danger:hover{
+      background-color: black;
+   }
+   
+</style>
+
+<div class="fff">
+   <div style="text-align: center;" >
+      
+         <h1 class="h1">
             WD Voting Platform
          </h1>
-      </header>
+      
    </div>
-   <div class="text-black flex flex-col justify-between items-center">
-      <div class="flex flex-col md:w-2/5 w-full">
-         <div class="flex justify-between w-full">
-            <div class="flex justify-center items-center gap-2">
-               <i class="fa fa-user flex items-center justify-center"></i>
-               <p class="font-semibold text-xl flex items-center justify-center"><%= username %></p>
-            </div>
-            <div class="flex gap-4">
-               <a class="text-white px-6 bg-blue-500 hover:bg-blue-700 transition duration-200 border-2 border-blue-700 p-2 rounded-lg" href="/index">Home</a>
-               <a class="text-red-500 px-6 hover:bg-red-100 transition duration-200 border-2 border-red-500 p-2 rounded-lg"href="/signout">Sign Out</a>
-            </div>
-         </div>
-      </div>
-   </div>
+   <div class="f2">
+               <div class="f3">
+               <p style="font-weight: bold;">Hi <%= username %></p></div>
+           
+            
+               <div><a style="margin-right: 1rem;" class="btn btn-primary" href="/index">Home</a>
+               <a class="btn btn-danger" href="/signout">Sign Out</a></div>
+           
+    </div>
+     
 </div>

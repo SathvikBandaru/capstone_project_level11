@@ -3,7 +3,7 @@
     <title>Online Voting Platform</title>
     <meta name="csrf-token" content="<%= csrf %>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.tailwindcss.com"></script>
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <script>
         // function to delete election
@@ -26,18 +26,20 @@
     </script>
   </head>
   <body>
-    <div class="flex flex-col justify-center items-center p-4">
-      <div class="flex flex-col gap-4 justify-center w-full p-4">
+    <div class="mt-4">
+      <div >
         <% if (elections.length === 0) { %>
-            <h1 class="text-2xl flex justify-center text-gray-600">No elections created yet</h1>
+            <h1 >No elections created yet</h1>
         <% } %>
         <% for (var i=0; i<elections.length; i++) { %>
-            <div class="flex justify-between gap-6">
-                <li class="text-2xl"><%= elections[i].name %></li>
-                <div class="flex gap-4 justify-center items-center text-xl">
-                    <a href="/election/<%= elections[i].id %>"><i class="cursor-pointer fa fa-external-link hover:text-blue-700 transition duration-200"></i></a>
-                    <div onclick="deleteElection('<%= elections[i].id %>')"><i class="cursor-pointer fa fa-trash hover:text-red-500 transition duration-200"></i></div>
-                </div>
+            <div style="display: flex; text-align: center;width: 75%;margin: auto;align-items: center;justify-content: space-between;">
+                <div class="h2"><li ><%= elections[i].name %></li></div>
+                <div style="display: flex;justify-content: space-around;width: 400px;">
+
+                
+                    <a class="btn btn-info" href="/election/<%= elections[i].id %>">Manage Election</a>
+                    <div class="btn btn-info" style="cursor: pointer;" onclick="deleteElection('<%= elections[i].id %>')">Delete Election</div>
+                  </div>
             </div>
         <% } %>
       </div>
