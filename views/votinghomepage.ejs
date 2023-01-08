@@ -9,7 +9,7 @@
         <div>
             <p class="text-xl">Voter ID: <b><%= voter.VoterId %></b></p>
         </div>
-        <form action="/election/<%= election.id %>/voter/<%= voter.id%>/submit" method="post" class="pt-6">
+        <form action="" class="pt-6">
             <input type="hidden" name="_csrf" value="<%= csrf %>">
             <% for (var i=0; i<questions.length; i++) { %>
                 <div>
