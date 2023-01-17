@@ -1246,6 +1246,119 @@ app.put(
 	}
 );
 
+//election results for a particular election
+app.get(
+	"/election/:id/result",
+	// connectEnsureLogin.ensureLoggedIn(),
+	async (request, response) => {
+		// fetching and calculating all results
+		const questions = await question.findAll({
+			where: {
+				ElectionId: request.params.id,
+			},
+		});
+
+		const Voters = await voters.findAll({
+			where: {
+				ElectionId: request.params.id,
+			},
+		});
+
+		let votesCast = 0;
+		Voters.forEach((voter) => {
+			if (voter.status) {
+				votesCast++;
+			}
+		});
+
+		const totalVoters = Voters.length;
+
+		let optionPercentage = [];
+
+		for (let i = 0; i < questions.length; i++) {
+			// specific question
+			let array = [];
+
+			// all options of that question
+			const allOption = await options.findAll({
+				where: { QuestionId: questions[i].id },
+			});
+
+			allOption.forEach((option) => {
+				// count for specific option
+				let count = 0;
+
+				Voters.forEach((voter) => {
+					if (voter.responses.includes(option.id)) {
+						count++;
+					}
+				});
+
+				const percent = (count * 100) / totalVoters;
+
+				// adding the percentage for that specific option of specific question
+				array.push(percent.toFixed(2));
+			});
+
+			optionPercentage.push(array);
+		}
+
+		const Options = [];
+
+		for (let i = 0; i < questions.length; i++) {
+			const allOption = await options.findAll({
+				where: { QuestionId: questions[i].id },
+			});
+			Options.push(allOption);
+		}
+
+		const election = await StateElections.findByPk(request.params.id);
+
+		// if admin logged in and not voter logged in
+		if (request.user && request.user.id && !request.user.VoterId) {
+			const adminID = request.user.id;
+			const Admin = await admin.findByPk(adminID);
+
+			if (adminID !== election.AdminId && !election.ended) {
+				return response.send(
+					"You are not authorized to view this page"
+				);
+			}
+
+			response.render("viewresult", {
+				Admin: true,
+				username: Admin.name,
+				election: election,
+				questions: questions,
+				options: Options,
+				data: optionPercentage,
+				votesCast: votesCast,
+				totalVoters: totalVoters,
+			});
+		} else {
+			// if not admin and election not ended
+			if (!election.ended) {
+				return response.render("error", {
+					errorMessage: "You are not authorized to view this page",
+				});
+			}
+
+			// getting the admin username
+			const Admin = await admin.findByPk(election.AdminId);
+			return response.render("viewresult", {
+				Admin: false,
+				username: Admin.name,
+				election: election,
+				questions: questions,
+				options: Options,
+				data: optionPercentage,
+				votesCast: votesCast,
+				totalVoters: totalVoters,
+			});
+		}
+	}
+);
+
 
 
 module.exports = app;
