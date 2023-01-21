@@ -147,8 +147,8 @@ app.get(
 	"/index",
 	connectEnsureLogin.ensureLoggedIn(),
 	async (request, response) => {
-		const adminid = request.user.id;
-		const Admin = await admin.findByPk(adminid);
+		
+		const Admin = await admin.findByPk(request.user.id);
 
 		const elections = await StateElections.findAll({
 			where: { AdminId: request.user.id },
