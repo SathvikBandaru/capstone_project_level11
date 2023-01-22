@@ -1293,11 +1293,18 @@ app.get(
 						count++;
 					}
 				});
+				let count1=0;
 
-				const percent = (count * 100) / totalVoters;
+				Voters.forEach((voter)=>{
+					if(voter.status){
+						count1++;
+					}
+				})
+
+				const percent = (count * 100) /count1;
 
 				// adding the percentage for that specific option of specific question
-				array.push(percent.toFixed(2));
+				array.push(percent);
 			});
 
 			optionPercentage.push(array);
