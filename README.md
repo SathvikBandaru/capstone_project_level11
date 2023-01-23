@@ -12,6 +12,8 @@ Deployed App link:
 
 ## Demo link
 
+https://www.loom.com/share/bba04b12e69948c2a1b439752fffdc78
+
 ## Features
 
 - Fully Responsive platform
@@ -21,10 +23,17 @@ Deployed App link:
 - Admin can create a ballot of questions in an election
 - Admin can register voters
 - Admin can launch election
+- Admin can Preview results while election is running
+- Elections administrator can set custom path to election
+- Voter can login to voting page and submit his response
+- Ending the election
+- We cannot delete election after ending election
+- We cannot edit questions after launching election
+- We cannot edit questions,voters,options etc... after ending an election
 
 ## Tech Stack
 
-**Client:** EJS, TailwindCSS
+**Client:** EJS, TailwindCSS, BootStrap
 
 **Server:** Node, Express
 
